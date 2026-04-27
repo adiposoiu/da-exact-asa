@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Da. Exact Așa. — Randări 3D foto-realiste în 48h</title>
+<meta name="description" content="Transformăm schița primită de la client într-o randare clară pe care o poți folosi în ofertă. Livrare în 48 de ore.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* =========================================================
+     DESIGN TOKENS
+     ========================================================= */
+  :root {
+    --bg-0: #050514;
+    --bg-1: #0A0A24;
+    --bg-2: #0D0D33;
+    --surface: rgba(255, 255, 255, 0.025);
+    --surface-hover: rgba(255, 255, 255, 0.045);
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.14);
+
+    --accent: #4677FF;
+    --accent-soft: rgba(70, 119, 255, 0.12);
+    --accent-glow: rgba(70, 119, 255, 0.45);
+    --orange: #FF6419;
+    --orange-glow: rgba(255, 100, 25, 0.4);
+
+    --text: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.72);
+    --text-soft: rgba(255, 255, 255, 0.5);
+
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  /* =========================================================
+     RESET
+     ========================================================= */
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-0);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv11", "ss01", "calt";
+    overflow-x: hidden;
+  }
+
+  img, video { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* =========================================================
+     AMBIENT BACKGROUND (cinematic deep navy with aurora)
+     ========================================================= */
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    pointer-events: none;
+    z-index: -1;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.55;
+  }
+
+  body::before {
+    top: -10%;
+    left: -10%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, var(--accent-soft) 0%, transparent 65%);
+  }
+
+  body::after {
+    bottom: -20%;
+    right: -10%;
+    width: 55vw;
+    height: 55vw;
+    background: radial-gradient(circle, rgba(255, 100, 25, 0.08) 0%, transparent 65%);
+  }
+
+  /* =========================================================
+     LAYOUT — sections
+     ========================================================= */
+  section {
+    position: relative;
+    padding: 140px 56px;
+    overflow: hidden;
+  }
+
+  .slide-inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* =========================================================
+     TYPOGRAPHY
+     ========================================================= */
+  h1, h2, h3, h4 {
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    color: var(--text);
+  }
+
+  h1 {
+    font-size: clamp(44px, 5.4vw, 76px);
+    font-weight: 900;
+    letter-spacing: -0.055em;
+    line-height: 1.02;
+    margin-bottom: 28px;
+  }
+
+  h2 {
+    font-size: clamp(36px, 4vw, 58px);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1.04;
+    margin-bottom: 48px;
+  }
+
+  .accent { color: var(--accent); }
+  .orange { color: var(--orange); }
+  h1 .mint, h2 .mint { color: var(--accent); }
+  h1 .fuchsia, h2 .fuchsia { color: var(--orange); }
+
+  .lead {
+    font-size: clamp(18px, 1.4vw, 21px);
+    color: var(--text-muted);
+    font-weight: 400;
+    line-height: 1.55;
+    margin-bottom: 32px;
+    max-width: 640px;
+  }
+
+  .emphasis {
+    margin-top: 48px;
+    font-size: clamp(22px, 2vw, 28px);
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.3;
+    max-width: 780px;
+    padding-left: 28px;
+    border-left: 2px solid var(--accent);
+  }
+
+  /* =========================================================
+     LABELS / KICKERS
+     ========================================================= */
+  .label,
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    padding: 8px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: var(--surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .label::before,
+  .kicker::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  /* =========================================================
+     BULLETS
+     ========================================================= */
+  ul.bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 760px;
+  }
+
+  ul.bullets li {
+    font-size: clamp(17px, 1.3vw, 19px);
+    font-weight: 500;
+    color: var(--text);
+    padding-left: 36px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  ul.bullets li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 22px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  /* =========================================================
+     BUTTONS
+     ========================================================= */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 56px;
+    padding: 0 32px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out), background 0.3s var(--ease-out);
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--orange);
+    color: white;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+      0 12px 32px var(--orange-glow),
+      0 1px 0 rgba(255, 255, 255, 0.18) inset;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+      0 18px 48px var(--orange-glow),
+      0 1px 0 rgba(255, 255, 255, 0.25) inset;
+    background: #ff7a3a;
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .btn-secondary:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* =========================================================
+     PROGRESS BAR
+     ========================================================= */
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--orange));
+    width: 0%;
+    z-index: 100;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  /* =========================================================
+     SCROLL REVEAL
+     ========================================================= */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+    will-change: opacity, transform;
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal.delay-1 { transition-delay: 0.08s; }
+  .reveal.delay-2 { transition-delay: 0.16s; }
+  .reveal.delay-3 { transition-delay: 0.24s; }
+  .reveal.delay-4 { transition-delay: 0.32s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* =========================================================
+     SECTION 1 — HERO
+     ========================================================= */
+  .hero {
+    padding: 120px 56px 100px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero-container {
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 88px;
+    align-items: center;
+  }
+
+  .hero h1 {
+    margin: 0 0 24px;
+    max-width: 600px;
+  }
+
+  .hero .lead {
+    max-width: 540px;
+    margin: 0 0 36px;
+  }
+
+  .hero .micro {
+    margin-top: 14px;
+    color: var(--text-soft);
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hero .micro::before {
+    content: "";
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.6);
+  }
+
+  /* Compare slider */
+  .compare-slider {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-0);
+    box-shadow:
+      0 0 0 1px var(--border) inset,
+      0 40px 100px rgba(0, 0, 0, 0.55),
+      0 0 60px rgba(70, 119, 255, 0.08);
+    isolation: isolate;
+  }
+
+  .compare-slider::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 7;
+    pointer-events: none;
+    border-radius: inherit;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  }
+
+  .compare-slider img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+
+  .compare-slider .render { z-index: 1; }
+
+  .compare-slider .sketch-wrap {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 50%;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .compare-slider .sketch-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .compare-slider .compare-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.95);
+    z-index: 4;
+    transform: translateX(-50%);
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.5);
+  }
+
+  .compare-slider .handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.98);
+    color: var(--bg-2);
+    z-index: 5;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      0 0 0 6px rgba(255, 255, 255, 0.12),
+      0 14px 36px rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+    transition: transform 0.2s var(--ease-out);
+  }
+
+  .compare-slider:hover .handle {
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+
+  .compare-slider .handle svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .compare-slider .compare-label {
+    position: absolute;
+    top: 18px;
+    z-index: 6;
+    padding: 7px 13px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.55);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .compare-slider .compare-label.left { left: 18px; }
+  .compare-slider .compare-label.right { right: 18px; }
+
+  .compare-slider input[type="range"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 10;
+    cursor: ew-resize;
+    margin: 0;
+  }
+
+  /* =========================================================
+     SECTION 2 — TRANSFORM (full-bleed video)
+     ========================================================= */
+  section.transform {
+    padding: 0;
+    height: 100vh;
+    min-height: 600px;
+  }
+
+  .transform-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+
+  .transform-wrap video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .transform-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 40px 100px;
+    pointer-events: none;
+    background:
+      linear-gradient(to top, rgba(5, 5, 20, 0.85) 0%, rgba(5, 5, 20, 0) 50%),
+      linear-gradient(to bottom, rgba(5, 5, 20, 0.4) 0%, rgba(5, 5, 20, 0) 25%);
+  }
+
+  .transform-text {
+    font-size: clamp(30px, 4vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    text-align: center;
+    max-width: 1000px;
+    line-height: 1.1;
+    color: white;
+    text-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+  }
+
+  .transform-text .mint { color: var(--accent); }
+
+  /* =========================================================
+     SECTION — PROBLEMA (just typography styling, uses defaults)
+     ========================================================= */
+
+  /* =========================================================
+     SECTION — PORTOFOLIU
+     ========================================================= */
+  .portfolio-intro {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+
+  .portfolio-intro .label {
+    margin-bottom: 24px;
+  }
+
+  .portfolio-intro h2 {
+    margin-bottom: 0;
+  }
+
+  .portfolio-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 56px;
+    align-items: start;
+    margin-bottom: 120px;
+  }
+
+  .portfolio-item:last-child { margin-bottom: 0; }
+
+  .portfolio-item.reverse {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .portfolio-item.reverse .portfolio-renders { order: 1; }
+  .portfolio-item.reverse .portfolio-meta { order: 2; }
+
+  .portfolio-meta { padding-top: 8px; }
+
+  .portfolio-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+
+  .portfolio-category::before {
+    content: "";
+    width: 18px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .portfolio-title {
+    font-size: clamp(26px, 2.4vw, 34px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+    margin-bottom: 18px;
+  }
+
+  .portfolio-desc {
+    font-size: 17px;
+    color: var(--text-muted);
+    font-weight: 400;
+    line-height: 1.55;
+    margin-bottom: 28px;
+  }
+
+  .portfolio-sketch-label {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .portfolio-sketch {
+    aspect-ratio: 4/3;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: #f5f2ea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+  }
+
+  .portfolio-sketch img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 14px;
+  }
+
+  .portfolio-renders {
+    display: grid;
+    gap: 18px;
+  }
+
+  .portfolio-renders.cols-1 { grid-template-columns: 1fr; }
+  .portfolio-renders.cols-2 { grid-template-columns: 1fr 1fr; }
+  .portfolio-renders.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .portfolio-render {
+    position: relative;
+    aspect-ratio: 4/3;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    isolation: isolate;
+  }
+
+  .portfolio-render.wide {
+    grid-column: span 2;
+    aspect-ratio: 16/9;
+  }
+
+  .portfolio-render img,
+  .portfolio-render video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s var(--ease-out), filter 0.4s var(--ease-out);
+    will-change: transform;
+  }
+
+  .portfolio-render::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(5, 5, 20, 0.4) 0%, rgba(5, 5, 20, 0) 50%);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-out);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .portfolio-render:hover img,
+  .portfolio-render:hover video {
+    transform: scale(1.06);
+    filter: brightness(1.05);
+  }
+
+  .portfolio-render:hover::after { opacity: 1; }
+
+  /* =========================================================
+     SECTION — STEPS (Cum funcționează)
+     ========================================================= */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 24px;
+    position: relative;
+  }
+
+  /* Connector line behind step cards */
+  .steps::before {
+    content: "";
+    position: absolute;
+    top: 78px;
+    left: 8%;
+    right: 8%;
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent 0%,
+      var(--border-strong) 15%,
+      var(--border-strong) 85%,
+      transparent 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 36px 28px;
+    transition: transform 0.4s var(--ease-out), border-color 0.3s var(--ease-out), background 0.3s var(--ease-out);
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .step:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    background: var(--surface-hover);
+  }
+
+  .step-num {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg-2);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    box-shadow: 0 0 24px var(--accent-glow);
+  }
+
+  .step h4 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+
+  .step p {
+    font-size: 15px;
+    color: var(--text-muted);
+    font-weight: 400;
+    line-height: 1.55;
+  }
+
+  .step-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 600;
+    border-bottom: 1px solid rgba(70, 119, 255, 0.3);
+    padding-bottom: 2px;
+    transition: border-color 0.2s, gap 0.2s var(--ease-out);
+  }
+
+  .step-link:hover {
+    border-color: var(--accent);
+    gap: 10px;
+  }
+
+  /* =========================================================
+     SECTION — PACKAGES
+     ========================================================= */
+  .packages-intro { text-align: center; margin-bottom: 56px; }
+  .packages-intro h2 { margin-bottom: 0; }
+
+  .packages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 24px;
+    align-items: stretch;
+  }
+
+  .pkg {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px 32px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s var(--ease-out), border-color 0.3s var(--ease-out), background 0.3s var(--ease-out);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .pkg:hover {
+    transform: translateY(-6px);
+    border-color: var(--border-strong);
+  }
+
+  .pkg.featured {
+    border-color: var(--accent);
+    background: linear-gradient(180deg, rgba(70, 119, 255, 0.08) 0%, rgba(70, 119, 255, 0.02) 100%);
+    transform: translateY(-12px);
+    box-shadow:
+      0 0 0 1px var(--accent) inset,
+      0 30px 80px rgba(70, 119, 255, 0.18),
+      0 0 60px rgba(70, 119, 255, 0.12);
+  }
+
+  .pkg.featured:hover {
+    transform: translateY(-18px);
+  }
+
+  .pkg-badge {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--orange);
+    color: white;
+    font-size: 11px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: 0 8px 24px var(--orange-glow);
+  }
+
+  .pkg-name {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 22px;
+    padding: 6px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    text-transform: uppercase;
+    align-self: flex-start;
+  }
+
+  .pkg-price {
+    font-size: clamp(48px, 4vw, 60px);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    margin-bottom: 32px;
+  }
+
+  .pkg ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 28px;
+    flex: 1;
+  }
+
+  .pkg ul li {
+    font-size: 15px;
+    color: var(--text);
+    padding-left: 26px;
+    position: relative;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  .pkg ul li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 14px;
+    height: 6px;
+    border-left: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(-45deg);
+  }
+
+  .pkg-reco {
+    font-size: 13px;
+    color: var(--text-soft);
+    font-weight: 500;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .pkg-footnote {
+    font-size: 14px;
+    color: var(--text-soft);
+    font-weight: 400;
+    text-align: center;
+    margin-top: 48px;
+    font-style: italic;
+  }
+
+  /* =========================================================
+     SECTION — FAQ
+     ========================================================= */
+  .faq-intro { margin-bottom: 48px; }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .faq-item:hover { background: rgba(255, 255, 255, 0.015); }
+
+  .faq-q {
+    font-size: clamp(17px, 1.4vw, 20px);
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.025em;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 26px 4px;
+    width: 100%;
+    text-align: left;
+    transition: color 0.2s;
+  }
+
+  .faq-q:hover { color: var(--accent); }
+
+  .faq-toggle {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.35s var(--ease-out), background 0.2s, border-color 0.2s;
+  }
+
+  .faq-item.open .faq-toggle {
+    transform: rotate(45deg);
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .faq-a {
+    font-size: 16px;
+    color: var(--text-muted);
+    font-weight: 400;
+    line-height: 1.6;
+    max-width: 780px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s var(--ease-out), padding 0.4s var(--ease-out);
+    padding: 0 4px;
+  }
+
+  .faq-item.open .faq-a {
+    max-height: 500px;
+    padding: 0 4px 28px;
+  }
+
+  /* =========================================================
+     SECTION — FINAL CTA
+     ========================================================= */
+  section.cta {
+    text-align: center;
+    padding: 160px 56px;
+    position: relative;
+  }
+
+  section.cta::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    max-width: 900px;
+    height: 600px;
+    background: radial-gradient(ellipse at center, rgba(255, 100, 25, 0.18) 0%, rgba(70, 119, 255, 0.08) 35%, transparent 65%);
+    filter: blur(60px);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .cta-title {
+    font-size: clamp(46px, 5.6vw, 80px);
+    font-weight: 900;
+    line-height: 1.02;
+    letter-spacing: -0.06em;
+    margin-bottom: 56px;
+  }
+
+  .cta-sub {
+    display: block;
+    font-size: clamp(18px, 1.6vw, 24px);
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-top: 20px;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+
+  .cta-contacts {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* =========================================================
+     RESPONSIVE
+     ========================================================= */
+  @media (max-width: 980px) {
+    section { padding: 100px 32px; }
+    .hero { padding: 80px 32px; }
+
+    .hero-container { grid-template-columns: 1fr; gap: 48px; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .steps::before { display: none; }
+    .packages { grid-template-columns: 1fr; }
+    .pkg.featured { transform: none; }
+    .pkg.featured:hover { transform: translateY(-6px); }
+    .portfolio-item,
+    .portfolio-item.reverse {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+    .portfolio-item.reverse .portfolio-renders { order: unset; }
+    .portfolio-item.reverse .portfolio-meta { order: unset; }
+    .portfolio-renders.cols-3 { grid-template-columns: 1fr 1fr; }
+    .portfolio-item { margin-bottom: 80px; }
+  }
+
+  @media (max-width: 640px) {
+    section { padding: 72px 22px; }
+    .hero { padding: 64px 22px; }
+
+    h1 { font-size: 36px; letter-spacing: -0.045em; }
+    h2 { font-size: 28px; letter-spacing: -0.04em; margin-bottom: 32px; }
+    .lead { font-size: 16px; margin-bottom: 28px; }
+    .emphasis { font-size: 19px; margin-top: 32px; padding-left: 20px; }
+
+    ul.bullets { gap: 16px; }
+    ul.bullets li { font-size: 16px; padding-left: 30px; }
+
+    .label, .kicker { font-size: 11px; }
+
+    .btn { width: 100%; min-height: 54px; font-size: 15px; }
+
+    .compare-slider { aspect-ratio: 4/3; }
+    .compare-slider .handle { width: 48px; height: 48px; }
+    .compare-slider .handle svg { width: 18px; height: 18px; }
+    .compare-slider .compare-label { font-size: 10px; padding: 6px 11px; }
+
+    .transform-wrap { background: var(--bg-2); }
+    .transform-wrap video { object-fit: contain; }
+    .transform-text { font-size: 22px; padding: 0 20px; line-height: 1.25; }
+    .transform-overlay { padding: 0 20px 60px; }
+
+    .portfolio-intro { margin-bottom: 56px; }
+    .portfolio-title { font-size: 24px; }
+    .portfolio-desc { font-size: 15px; }
+    .portfolio-renders.cols-2,
+    .portfolio-renders.cols-3 { grid-template-columns: 1fr; }
+    .portfolio-render.wide { grid-column: span 1; aspect-ratio: 4/3; }
+    .portfolio-item { margin-bottom: 64px; }
+
+    .steps { grid-template-columns: 1fr; gap: 14px; }
+    .step { padding: 28px 24px; }
+    .step-num { width: 40px; height: 40px; font-size: 15px; margin-bottom: 18px; }
+    .step h4 { font-size: 19px; }
+    .step p { font-size: 15px; }
+
+    .pkg { padding: 32px 24px; }
+    .pkg-name { font-size: 11px; }
+    .pkg-price { font-size: 42px; margin-bottom: 24px; }
+    .pkg ul li { font-size: 15px; }
+    .pkg-reco { font-size: 13px; }
+    .pkg-footnote { font-size: 13px; margin-top: 32px; }
+
+    .faq-q { font-size: 16px; padding: 22px 4px; gap: 16px; }
+    .faq-a { font-size: 15px; }
+    .faq-toggle { width: 24px; height: 24px; font-size: 16px; }
+
+    section.cta { padding: 100px 22px; }
+    .cta-title { font-size: 32px; letter-spacing: -0.045em; margin-bottom: 36px; }
+    .cta-sub { font-size: 16px; margin-top: 16px; }
+    .cta-contacts { flex-direction: column; width: 100%; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- SLIDE 1 — Hero cu slider compare -->
+<section class="hero">
+  <div class="hero-container">
+
+    <div class="hero-copy">
+      <div class="kicker reveal">Randări pentru proiecte custom</div>
+
+      <h1 class="reveal delay-1">Arată-i clientului ce cumpără <span class="accent">înainte de producție.</span></h1>
+
+      <p class="lead reveal delay-2">
+        Transformăm schița primită de la client într-o randare clară pe care o poți folosi în ofertă.
+      </p>
+
+      <div class="reveal delay-3">
+        <a href="https://wa.me/40731037773?text=Salut!%20Vreau%20s%C4%83%20trimit%20o%20schi%C8%9B%C4%83%20pentru%20o%20randare%20demo." target="_blank" rel="noopener" class="btn btn-primary">
+          Trimite schița și îți facem o randare demo
+        </a>
+        <div class="micro">Fără cost. Fără obligații.</div>
+      </div>
+    </div>
+
+    <div class="compare-slider reveal delay-2">
+      <img class="render" src="randare.jpg" alt="Randare 3D stand expozițional">
+
+      <div class="sketch-wrap" id="sketchWrap">
+        <img src="schita.jpg" alt="Schiță inițială stand expozițional">
+      </div>
+
+      <div class="compare-line" id="compareLine"></div>
+      <div class="handle" id="compareHandle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 3 12 9 6"></polyline>
+          <polyline points="15 6 21 12 15 18"></polyline>
+        </svg>
+      </div>
+
+      <div class="compare-label left">SCHIȚĂ</div>
+      <div class="compare-label right">RANDARE</div>
+
+      <input type="range" min="0" max="100" value="50" id="compareRange" aria-label="Compară schița cu randarea">
+    </div>
+
+  </div>
+</section>
+
+<!-- SLIDE 2 — Transform -->
+<section class="transform">
+  <div class="transform-wrap">
+    <video src="digi-transform.mp4" poster="digi-render-1.png" autoplay loop muted playsinline preload="auto"></video>
+  </div>
+  <div class="transform-overlay">
+    <p class="transform-text">
+      Între ce desenează clientul<br>
+      și <span class="mint">ce are el cu adevărat în minte...</span>
+    </p>
+  </div>
+</section>
+
+<!-- SLIDE 3 — Problema -->
+<section>
+  <div class="slide-inner">
+    <span class="label reveal">Problema</span>
+    <h1 class="reveal delay-1">Există o <span class="accent">prăpastie uriașă</span>.</h1>
+    <p class="lead reveal delay-2">Această prăpastie te costă:</p>
+    <ul class="bullets reveal delay-3">
+      <li>Timp pierdut cu explicații</li>
+      <li>Modificări costisitoare după producție</li>
+      <li>Comenzi pierdute</li>
+    </ul>
+    <p class="emphasis reveal delay-4">Noi clarificăm totul în 48 de ore — de la explicații vagi la o prezentare clară a produsului.</p>
+  </div>
+</section>
+
+<!-- SLIDE 4 — Portofoliu -->
+<section>
+  <div class="slide-inner">
+    <div class="portfolio-intro reveal">
+      <span class="label">Portofoliu</span>
+      <h2>Proiecte <span class="accent">realizate</span></h2>
+    </div>
+
+    <!-- Exemplul 1 — Stand Digi -->
+    <div class="portfolio-item reveal">
+      <div class="portfolio-meta">
+        <div class="portfolio-category">Stand expo / telecom</div>
+        <h3 class="portfolio-title">Stand expozițional corporate</h3>
+        <p class="portfolio-desc">De la o schiță de concept — la vizualizări foto-realiste în 3 unghiuri diferite: frontal, aerian și lateral.</p>
+        <div class="portfolio-sketch-label">Schița primită</div>
+        <div class="portfolio-sketch">
+          <img src="schita.jpg" alt="Schiță stand Digi">
+        </div>
+      </div>
+      <div class="portfolio-renders cols-2">
+        <div class="portfolio-render wide">
+          <img src="randare.jpg" alt="Randare stand frontal">
+        </div>
+        <div class="portfolio-render">
+          <img src="digi-render-2.png" alt="Randare stand aerian">
+        </div>
+        <div class="portfolio-render">
+          <img src="digi-render-3.png" alt="Randare stand lateral">
+        </div>
+      </div>
+    </div>
+
+    <!-- Exemplul 2 — Bancă modulară -->
+    <div class="portfolio-item reverse reveal">
+      <div class="portfolio-meta">
+        <div class="portfolio-category">Mobilier modular / outdoor</div>
+        <h3 class="portfolio-title">Bancă modulară exterior</h3>
+        <p class="portfolio-desc">Schița de mână a clientului transformată în ambient foto-realist, cu context real — eveniment în parc.</p>
+        <div class="portfolio-sketch-label">Schița primită</div>
+        <div class="portfolio-sketch">
+          <img src="banca-schita.png" alt="Schiță bancă modulară">
+        </div>
+      </div>
+      <div class="portfolio-renders cols-2">
+        <div class="portfolio-render wide">
+          <img src="banca-render.jpeg" alt="Randare bancă modulară în parc">
+        </div>
+        <div class="portfolio-render">
+          <img src="banca-render-2.jpeg" alt="Randare bancă modulară — vedere aeriană">
+        </div>
+        <div class="portfolio-render">
+          <img src="banca-render-3.jpeg" alt="Randare bancă modulară — context eveniment">
+        </div>
+        <div class="portfolio-render wide">
+          <video src="banca-render.mp4" poster="banca-render.jpeg" autoplay loop muted playsinline preload="auto"></video>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exemplul 3 — Noptieră -->
+    <div class="portfolio-item reveal">
+      <div class="portfolio-meta">
+        <div class="portfolio-category">Mobilier custom / interior</div>
+        <h3 class="portfolio-title">Noptieră custom cu sertar</h3>
+        <p class="portfolio-desc">Schiță creion pe hârtie — transformată în randare de ambient, cu textură lemn și context de living.</p>
+        <div class="portfolio-sketch-label">Schița primită</div>
+        <div class="portfolio-sketch">
+          <img src="noptiera-schita.png" alt="Schiță noptieră">
+        </div>
+      </div>
+      <div class="portfolio-renders cols-2">
+        <div class="portfolio-render wide">
+          <img src="noptiera-render.png" alt="Randare noptieră în ambient">
+        </div>
+        <div class="portfolio-render">
+          <img src="noptiera-render-2.png" alt="Randare noptieră — unghi dreapta">
+        </div>
+        <div class="portfolio-render">
+          <img src="noptiera-render-3.png" alt="Randare noptieră — profil lateral">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SLIDE 5 — Ne adresăm ție -->
+<section>
+  <div class="slide-inner">
+    <h2 class="reveal">Ne adresăm ție, <span class="accent">dacă:</span></h2>
+    <ul class="bullets reveal delay-1">
+      <li>Produci standuri expoziționale și clienții cer mereu „să vadă cum arată înainte"</li>
+      <li>Faci casete luminoase, totemuri, semnalistică sau litere volumetrice</li>
+      <li>Realizezi mobilier custom, amenajări interioare sau produse la comandă</li>
+      <li>Vinzi orice produs fizic care trebuie aprobat vizual înainte de producție</li>
+    </ul>
+  </div>
+</section>
+
+<!-- SLIDE 6 — Cum funcționează -->
+<section>
+  <div class="slide-inner">
+    <h2 class="reveal">Cum <span class="accent">funcționează</span>:</h2>
+    <div class="steps">
+      <div class="step reveal delay-1">
+        <div class="step-num">1</div>
+        <h4>Brief</h4>
+        <p>Îți dăm noi un template clar, cu informațiile esențiale pe care să le ceri clientului.</p>
+        <a href="#" class="step-link">Descarcă template (PDF) →</a>
+      </div>
+      <div class="step reveal delay-2">
+        <div class="step-num">2</div>
+        <h4>Descriere</h4>
+        <p>Clientul descrie ce vrea + atașează poze și schițe.</p>
+      </div>
+      <div class="step reveal delay-3">
+        <div class="step-num">3</div>
+        <h4>Livrare în 48h</h4>
+        <p>Noi lucrăm și în 48 de ore primești pachetul complet.</p>
+      </div>
+      <div class="step reveal delay-4">
+        <div class="step-num">4</div>
+        <h4>Aprobare</h4>
+        <p>Primești un link privat cu parolă, optimizat pentru telefon. Clientul deschide direct prezentarea și aprobă propunerea.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7 — Pachete -->
+<section>
+  <div class="slide-inner">
+    <div class="packages-intro reveal">
+      <h2>Alege pachetul <span class="accent">potrivit pentru tine</span></h2>
+    </div>
+    <div class="packages">
+      <div class="pkg reveal delay-1">
+        <div class="pkg-name">Basic</div>
+        <div class="pkg-price">100€</div>
+        <ul>
+          <li>2 randări JPG, 4K (3840×2160)</li>
+          <li>1 unghi, 1 variantă culoare/material</li>
+          <li>Livrare în 48h</li>
+          <li>Drepturi de utilizare comercială incluse</li>
+        </ul>
+        <div class="pkg-reco">Recomandat pentru: testări simple</div>
+      </div>
+      <div class="pkg featured reveal delay-2">
+        <div class="pkg-badge">Cel mai popular</div>
+        <div class="pkg-name">Standard</div>
+        <div class="pkg-price">175€</div>
+        <ul>
+          <li>3 randări JPG, 4K (3840×2160)</li>
+          <li>2–3 unghiuri diferite</li>
+          <li>2 variante culori/materiale</li>
+          <li>Video cinematic 10–20 secunde (MP4, 1080p)</li>
+          <li>Pagină privată cu parolă</li>
+          <li>1 rundă de revizuire inclusă</li>
+          <li>Drepturi de utilizare comercială incluse</li>
+        </ul>
+        <div class="pkg-reco">Recomandat pentru: majoritatea proiectelor</div>
+      </div>
+      <div class="pkg reveal delay-3">
+        <div class="pkg-name">Premium</div>
+        <div class="pkg-price">250€</div>
+        <ul>
+          <li>Tot ce e în Standard</li>
+          <li>3 variante culori/materiale</li>
+          <li>2 runde de revizuire incluse</li>
+          <li>Livrare prioritară 24h</li>
+          <li>Drepturi de utilizare comercială incluse</li>
+        </ul>
+        <div class="pkg-reco">Recomandat pentru: proiecte mari / urgente</div>
+      </div>
+    </div>
+    <p class="pkg-footnote reveal">Modificări suplimentare: 30€ / rundă. Pentru proiecte foarte complexe, timpul și prețul se ajustează.</p>
+  </div>
+</section>
+
+<!-- SLIDE 8 — FAQ -->
+<section>
+  <div class="slide-inner">
+    <div class="faq-intro reveal">
+      <span class="label">FAQ</span>
+      <h2>Întrebări <span class="accent">frecvente</span></h2>
+    </div>
+    <div class="faq-list reveal delay-1">
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Ce fac dacă nu îmi place rezultatul?</span>
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-a">Pachetele Standard și Premium includ runde de revizuire. Dacă după revizuiri rezultatul nu corespunde briefului inițial, returnăm 100% din sumă.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Cum facturați?</span>
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-a">Factură fiscală prin SRL cu TVA. O primești înainte de livrare, pe adresa de email comunicată în brief.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Ce se întâmplă dacă depășiți 48h?</span>
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-a">Dacă din motive care țin de noi depășim termenul promis, următoarea comandă e gratuită. În practică ne ținem de termen — dacă briefing-ul e complet, 48h sunt suficiente.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Cine deține drepturile asupra randărilor?</span>
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-a">Tu, clientul, deții drepturile de utilizare comercială (oferte, catalog, site, prezentări). DEA își păstrează dreptul de a le prezenta în portofoliu propriu, cu excepția cazurilor în care ceri confidențialitate.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>În ce format primesc fișierele?</span>
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-a">Randări statice: JPG 4K (3840×2160). Video: MP4 1080p. La cerere livrăm și PNG cu transparență. Livrarea se face prin link privat cu parolă, valabil 30 de zile.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Pot folosi randările în materiale comerciale?</span>
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-a">Da, complet. Le poți include în oferte către clienți, catalog, website, social media, print — orice material comercial. Sunt ale tale.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Lucrați cu schițe simple sau e nevoie de fișiere tehnice?</span>
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-a">O schiță pe hârtie + câteva referințe și dimensiuni aproximative sunt suficiente. Nu avem nevoie de DWG, SketchUp sau 3dsMax — însă dacă ai fișiere tehnice, cu atât mai bine.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Faceți și exterior (fațade, clădiri)?</span>
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-a">Ne specializăm pe produse individuale: standuri expo, casete luminoase, totemuri, mobilier custom, semnalistică. Pentru fațade întregi sau amenajări arhitecturale complete îți recomandăm un studio de arhitectură.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 9 — CTA -->
+<section class="cta">
+  <div class="slide-inner">
+    <h1 class="cta-title reveal">Trimite schița.<br><span class="cta-sub">Primești vizualizările 3D foto-realiste în 48 de ore.</span></h1>
+    <div class="cta-contacts reveal delay-1">
+      <a href="https://wa.me/40731037773?text=Salut!%20Am%20v%C4%83zut%20prezentarea%20DEA%20%C8%99i%20vreau%20s%C4%83%20aflu%20mai%20multe." target="_blank" rel="noopener" class="btn btn-primary">WhatsApp</a>
+      <a href="mailto:daexactasa@gmail.com?subject=Cerere%20vizualizare%203D" class="btn btn-secondary">Email</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Progress bar
+  (function () {
+    const progress = document.getElementById('progress');
+    let ticking = false;
+    function update() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progress.style.width = pct + '%';
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive: true });
+    update();
+  })();
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const q = item.querySelector('.faq-q');
+    q.addEventListener('click', () => {
+      item.classList.toggle('open');
+    });
+  });
+
+  // Scroll reveal
+  (function () {
+    const items = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(el => el.classList.add('is-visible'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    items.forEach(el => io.observe(el));
+  })();
+
+  // Hero compare slider — drag + range input
+  (function () {
+    const slider = document.querySelector('.compare-slider');
+    const range = document.getElementById('compareRange');
+    const sketchWrap = document.getElementById('sketchWrap');
+    const line = document.getElementById('compareLine');
+    const handle = document.getElementById('compareHandle');
+    if (!slider || !range || !sketchWrap || !line || !handle) return;
+
+    function setPosition(value) {
+      const v = Math.max(0, Math.min(100, value));
+      sketchWrap.style.width = v + '%';
+      line.style.left = v + '%';
+      handle.style.left = v + '%';
+      range.value = v;
+    }
+
+    range.addEventListener('input', function () {
+      setPosition(parseFloat(this.value));
+    });
+
+    // Pointer drag for smoother native feel
+    let dragging = false;
+    function pointerToValue(e) {
+      const rect = slider.getBoundingClientRect();
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      return (x / rect.width) * 100;
+    }
+
+    slider.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      slider.setPointerCapture(e.pointerId);
+      setPosition(pointerToValue(e));
+    });
+    slider.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      setPosition(pointerToValue(e));
+    });
+    slider.addEventListener('pointerup', (e) => {
+      dragging = false;
+      try { slider.releasePointerCapture(e.pointerId); } catch (_) {}
+    });
+    slider.addEventListener('pointercancel', () => { dragging = false; });
+
+    setPosition(parseFloat(range.value));
+  })();
+</script>
+
+</body>
+</html>
